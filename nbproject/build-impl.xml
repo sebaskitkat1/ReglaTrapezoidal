@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ReglaTrapezoidal-impl" default="default" basedir=".." xmlns:if="ant:if" xmlns:unless="ant:unless">
+    <property file="nbproject/project.properties"/>
+    <target name="default" depends="jar"/>
+    <target name="init">
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+    <target name="compile" depends="init">
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}" includeantruntime="false" source="${javac.source}" target="${javac.target}" encoding="${source.encoding}">
+            <classpath>
+                <pathelement path="${javac.classpath}"/>
+            </classpath>
+        </javac>
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${src.dir}" excludes="**/*.java"/>
+        </copy>
+    </target>
+    <target name="jar" depends="compile">
+        <jar jarfile="${dist.jar}" basedir="${build.classes.dir}" manifest="${manifest.file}">
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+            </manifest>
+        </jar>
+    </target>
+    <target name="run" depends="compile">
+        <java classname="${main.class}" fork="true">
+            <classpath>
+                <pathelement path="${build.classes.dir}"/>
+            </classpath>
+        </java>
+    </target>
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+</project>
