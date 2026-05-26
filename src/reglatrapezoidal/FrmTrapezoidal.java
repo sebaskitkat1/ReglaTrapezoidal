@@ -22,6 +22,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
     private static final Color COLOR_BORDER = new Color(189, 199, 214);
     private static final Color COLOR_BG = new Color(242, 246, 251);
     private static final Color COLOR_INPUT_BG = new Color(255, 255, 255);
+    private static final double TOLERANCE_BASE = 1e-6;
     private final DecimalFormat fmt = new DecimalFormat("0.######");
 
     public FrmTrapezoidal() {
@@ -271,7 +272,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             double h = (b - a) / n;
             for (int i = 0; i <= n; i++) {
                 double xi = a + (i * h);
-                model.addRow(new Object[]{i, xi, null});
+                model.addRow(new Object[]{i, xi, ""});
             }
 
             tblDatos.setModel(model);
@@ -457,13 +458,13 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
                 if (columnIndex == 0) {
                     return Integer.class;
                 }
-                return Double.class;
+                return Object.class;
             }
         };
     }
 
     private void validarEspaciadoUniforme(double[] x, double a, double b, int n) {
-        double tolerancia = Math.max(1e-6, Math.abs(b - a) * 1e-6);
+        double tolerancia = Math.max(TOLERANCE_BASE, Math.abs(b - a) * TOLERANCE_BASE);
         if (Math.abs(x[0] - a) > tolerancia || Math.abs(x[n] - b) > tolerancia) {
             throw new IllegalArgumentException("Los valores de Xi deben iniciar en a y terminar en b.");
         }
@@ -498,7 +499,9 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected,
                 boolean hasFocus, int row, int column) {
             Object valor = value;
-            if (value instanceof Number) {
+            if (value == null) {
+                valor = "";
+            } else if (value instanceof Number) {
                 valor = fmt.format(((Number) value).doubleValue());
             }
             Component comp = super.getTableCellRendererComponent(table, valor, isSelected, hasFocus, row, column);
