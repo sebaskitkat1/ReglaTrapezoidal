@@ -14,6 +14,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
     public FrmTrapezoidal() {
         initComponents();
         getContentPane().setBackground(new Color(235, 240, 246));
+        tblDatos.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         txtProcedimiento.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         txtProcedimiento.setText("Ingrese límites, segmentos y presione Generar Tabla.");
         centrarColumnas();
@@ -190,7 +191,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(txtResultado)))
                         .addGap(18, 18, 18)
-                        .addComponent(panelGrafica, javax.swing.GroupLayout.PREFERRED_SIZE, 471, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(panelGrafica, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
         pnlRootLayout.setVerticalGroup(
@@ -280,6 +281,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
 
     private void btnCalcularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalcularActionPerformed
         try {
+            finalizarEdicionTabla();
             int n = leerSegmentos(txtSegmentos.getText());
             if (tblDatos.getRowCount() != n + 1) {
                 throw new IllegalArgumentException("Genere la tabla para el número de segmentos ingresado.");
@@ -345,6 +347,14 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
 
     private void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void finalizarEdicionTabla() {
+        if (tblDatos.isEditing() && tblDatos.getCellEditor() != null) {
+            if (!tblDatos.getCellEditor().stopCellEditing()) {
+                tblDatos.getCellEditor().cancelCellEditing();
+            }
+        }
     }
 
     private double leerNumero(String valor, String campo) {
