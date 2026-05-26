@@ -23,7 +23,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
     private static final Color COLOR_BORDER = new Color(189, 199, 214);
     private static final Color COLOR_BG = new Color(242, 246, 251);
     private static final Color COLOR_INPUT_BG = new Color(255, 255, 255);
-    private static final double MIN_TOLERANCE = 1e-6;
+    private static final double MIN_TOLERANCE = 1e-5;
     private static final double TOLERANCE_SCALE = 1e-6;
     private final DecimalFormat fmt = new DecimalFormat("0.######");
 
@@ -305,8 +305,8 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
                 if (xObj == null || fObj == null || xObj.toString().trim().isEmpty() || fObj.toString().trim().isEmpty()) {
                     throw new IllegalArgumentException("La tabla está incompleta. Verifique Xi y f(Xi). (fila " + i + ")");
                 }
-                x[i] = leerNumero(xObj.toString(), "Xi en fila " + i);
-                fx[i] = leerNumero(fObj.toString(), "f(Xi) en fila " + i);
+                x[i] = leerNumero(xObj, "Xi en fila " + i);
+                fx[i] = leerNumero(fObj, "f(Xi) en fila " + i);
             }
 
             double a = leerNumero(txtInferior.getText(), "límite inferior");
@@ -378,6 +378,13 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         } catch (NumberFormatException ex) {
             throw new IllegalArgumentException("El campo " + campo + " debe ser numérico.");
         }
+    }
+
+    private double leerNumero(Object valor, String campo) {
+        if (valor instanceof Number number) {
+            return number.doubleValue();
+        }
+        return leerNumero(valor == null ? null : valor.toString(), campo);
     }
 
     private int leerSegmentos(String valor) {
