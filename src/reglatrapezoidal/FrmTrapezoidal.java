@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.text.DecimalFormat;
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -22,7 +23,8 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
     private static final Color COLOR_BORDER = new Color(189, 199, 214);
     private static final Color COLOR_BG = new Color(242, 246, 251);
     private static final Color COLOR_INPUT_BG = new Color(255, 255, 255);
-    private static final double TOLERANCE_BASE = 1e-6;
+    private static final double MIN_TOLERANCE = 1e-6;
+    private static final double TOLERANCE_SCALE = 1e-6;
     private final DecimalFormat fmt = new DecimalFormat("0.######");
 
     public FrmTrapezoidal() {
@@ -464,7 +466,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
     }
 
     private void validarEspaciadoUniforme(double[] x, double a, double b, int n) {
-        double tolerancia = Math.max(TOLERANCE_BASE, Math.abs(b - a) * TOLERANCE_BASE);
+        double tolerancia = Math.max(MIN_TOLERANCE, Math.abs(b - a) * TOLERANCE_SCALE);
         if (Math.abs(x[0] - a) > tolerancia || Math.abs(x[n] - b) > tolerancia) {
             throw new IllegalArgumentException("Los valores de Xi deben iniciar en a y terminar en b.");
         }
@@ -511,10 +513,14 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             } else {
                 comp.setForeground(table.getSelectionForeground());
             }
-            if (column == 0) {
-                setHorizontalAlignment(SwingConstants.CENTER);
+            if (comp instanceof JLabel label) {
+                if (column == 0) {
+                    label.setHorizontalAlignment(SwingConstants.CENTER);
+                } else {
+                    label.setHorizontalAlignment(SwingConstants.RIGHT);
+                }
             } else {
-                setHorizontalAlignment(SwingConstants.RIGHT);
+                setHorizontalAlignment(column == 0 ? SwingConstants.CENTER : SwingConstants.RIGHT);
             }
             return comp;
         }

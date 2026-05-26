@@ -13,6 +13,10 @@ import javax.swing.JPanel;
 
 public class PanelGrafica extends JPanel {
 
+    private static final int X_LABEL_OFFSET_X = -6;
+    private static final int X_LABEL_OFFSET_Y = 14;
+    private static final int Y_LABEL_OFFSET_X = -40;
+    private static final int Y_LABEL_OFFSET_Y = 4;
     private double[] x = new double[0];
     private double[] y = new double[0];
     private final DecimalFormat fmt = new DecimalFormat("0.##");
@@ -105,12 +109,12 @@ public class PanelGrafica extends JPanel {
         for (int i = 0; i <= gridX; i++) {
             double value = minX + i * rangeX / gridX;
             int gx = left + (int) Math.round(i * (w - left - right) / (double) gridX);
-            g2.drawString(fmt.format(value), gx - 6, h - bottom + 14);
+            g2.drawString(fmt.format(value), gx + X_LABEL_OFFSET_X, h - bottom + X_LABEL_OFFSET_Y);
         }
         for (int i = 0; i <= gridY; i++) {
             double value = maxY - i * rangeY / gridY;
             int gy = top + (int) Math.round(i * (h - top - bottom) / (double) gridY);
-            g2.drawString(fmt.format(value), left - 40, gy + 4);
+            g2.drawString(fmt.format(value), left + Y_LABEL_OFFSET_X, gy + Y_LABEL_OFFSET_Y);
         }
 
         for (int i = 0; i < x.length - 1; i++) {
