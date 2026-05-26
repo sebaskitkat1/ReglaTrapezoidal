@@ -90,7 +90,7 @@
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="panelGrafica" min="-2" pref="471" max="-2" attributes="0"/>
+                          <Component id="panelGrafica" min="-2" pref="360" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace pref="23" max="32767" attributes="0"/>
