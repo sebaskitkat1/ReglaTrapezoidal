@@ -1,23 +1,34 @@
 package reglatrapezoidal;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.text.DecimalFormat;
+import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 public class FrmTrapezoidal extends javax.swing.JFrame {
 
     private static final int MAX_SEGMENTOS = 6;
+    private static final Color COLOR_PRIMARY = new Color(32, 88, 163);
+    private static final Color COLOR_PRIMARY_DARK = new Color(24, 70, 135);
+    private static final Color COLOR_ACCENT = new Color(52, 120, 210);
+    private static final Color COLOR_TEXT = new Color(55, 66, 86);
+    private static final Color COLOR_SUBTLE = new Color(118, 128, 145);
+    private static final Color COLOR_BORDER = new Color(189, 199, 214);
+    private static final Color COLOR_BG = new Color(242, 246, 251);
+    private static final Color COLOR_INPUT_BG = new Color(255, 255, 255);
     private final DecimalFormat fmt = new DecimalFormat("0.######");
 
     public FrmTrapezoidal() {
         initComponents();
-        getContentPane().setBackground(new Color(235, 240, 246));
+        getContentPane().setBackground(COLOR_BG);
         tblDatos.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
-        txtProcedimiento.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        txtProcedimiento.setText("Ingrese límites, segmentos y presione Generar Tabla.");
-        centrarColumnas();
+        aplicarEstilos();
     }
 
     @SuppressWarnings("unchecked")
@@ -255,17 +266,12 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
                 throw new IllegalArgumentException("El límite superior debe ser mayor que el inferior.");
             }
 
-            DefaultTableModel model = new DefaultTableModel(new Object[]{"i", "Xi", "f(Xi)"}, 0) {
-                @Override
-                public boolean isCellEditable(int row, int col) {
-                    return col != 0;
-                }
-            };
+            DefaultTableModel model = crearModeloTabla();
 
             double h = (b - a) / n;
             for (int i = 0; i <= n; i++) {
                 double xi = a + (i * h);
-                model.addRow(new Object[]{i, fmt.format(xi), ""});
+                model.addRow(new Object[]{i, xi, null});
             }
 
             tblDatos.setModel(model);
@@ -274,6 +280,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             txtProcedimiento.setText("Tabla generada con n = " + n + " segmentos.\n"
                     + "Complete o corrija valores de Xi y f(Xi), luego presione Calcular.");
             panelGrafica.setDatos(new double[0], new double[0]);
+            btnCalcular.setEnabled(true);
         } catch (IllegalArgumentException ex) {
             mostrarError(ex.getMessage());
         }
@@ -302,6 +309,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             double a = leerNumero(txtInferior.getText(), "límite inferior");
             double b = leerNumero(txtSuperior.getText(), "límite superior");
             double h = (b - a) / n;
+            validarEspaciadoUniforme(x, a, b, n);
 
             double sumaInterna = 0;
             StringBuilder internasTexto = new StringBuilder();
@@ -340,9 +348,10 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         txtSegmentos.setText("");
         txtResultado.setText("");
         txtProcedimiento.setText("Ingrese límites, segmentos y presione Generar Tabla.");
-        tblDatos.setModel(new DefaultTableModel(new Object[][]{}, new String[]{"i", "Xi", "f(Xi)"}));
+        tblDatos.setModel(crearModeloTabla());
         centrarColumnas();
         panelGrafica.setDatos(new double[0], new double[0]);
+        btnCalcular.setEnabled(false);
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void mostrarError(String mensaje) {
@@ -380,8 +389,132 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         return n;
     }
 
+    private void aplicarEstilos() {
+        pnlRoot.setBackground(COLOR_BG);
+        pnlRoot.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(COLOR_BORDER),
+                BorderFactory.createEmptyBorder(16, 16, 16, 16)));
+
+        lblTitulo.setForeground(COLOR_PRIMARY);
+        lblInferior.setForeground(COLOR_TEXT);
+        lblSuperior.setForeground(COLOR_TEXT);
+        lblSegmentos.setForeground(COLOR_TEXT);
+        lblProcedimiento.setForeground(COLOR_TEXT);
+        lblResultado.setForeground(COLOR_TEXT);
+        lblSegmentos.setText("Segmentos (1 - " + MAX_SEGMENTOS + ")");
+
+        txtInferior.setBackground(COLOR_INPUT_BG);
+        txtSuperior.setBackground(COLOR_INPUT_BG);
+        txtSegmentos.setBackground(COLOR_INPUT_BG);
+        txtResultado.setBackground(new Color(231, 238, 247));
+        txtResultado.setForeground(COLOR_PRIMARY_DARK);
+        txtResultado.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        txtProcedimiento.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        txtProcedimiento.setText("Ingrese límites, segmentos y presione Generar Tabla.");
+        txtProcedimiento.setEditable(false);
+        txtProcedimiento.setBackground(COLOR_INPUT_BG);
+        txtProcedimiento.setBorder(BorderFactory.createLineBorder(COLOR_BORDER));
+
+        btnGenerar.setBackground(COLOR_ACCENT);
+        btnGenerar.setForeground(Color.WHITE);
+        btnCalcular.setBackground(COLOR_PRIMARY);
+        btnCalcular.setForeground(Color.WHITE);
+        btnLimpiar.setBackground(new Color(111, 122, 140));
+        btnLimpiar.setForeground(Color.WHITE);
+
+        btnGenerar.setToolTipText("Genera la tabla de Xi según los límites y segmentos.");
+        btnCalcular.setToolTipText("Calcula la integral con los valores de la tabla.");
+        btnLimpiar.setToolTipText("Limpia todos los campos y reinicia la tabla.");
+        txtInferior.setToolTipText("Ingrese el límite inferior a.");
+        txtSuperior.setToolTipText("Ingrese el límite superior b.");
+        txtSegmentos.setToolTipText("Número de segmentos (1 a " + MAX_SEGMENTOS + ").");
+
+        scrollTabla.setBorder(BorderFactory.createLineBorder(COLOR_BORDER));
+        scrollProcedimiento.setBorder(BorderFactory.createLineBorder(COLOR_BORDER));
+        panelGrafica.setBorder(BorderFactory.createLineBorder(COLOR_BORDER));
+
+        tblDatos.setModel(crearModeloTabla());
+        tblDatos.setRowHeight(24);
+        tblDatos.setGridColor(new Color(214, 222, 232));
+        tblDatos.setSelectionBackground(new Color(210, 228, 255));
+        tblDatos.setSelectionForeground(COLOR_TEXT);
+
+        getRootPane().setDefaultButton(btnGenerar);
+        btnCalcular.setEnabled(false);
+        centrarColumnas();
+    }
+
+    private DefaultTableModel crearModeloTabla() {
+        return new DefaultTableModel(new Object[][]{}, new String[]{"i", "Xi", "f(Xi)"}) {
+            @Override
+            public boolean isCellEditable(int row, int col) {
+                return col != 0;
+            }
+
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 0) {
+                    return Integer.class;
+                }
+                return Double.class;
+            }
+        };
+    }
+
+    private void validarEspaciadoUniforme(double[] x, double a, double b, int n) {
+        double tolerancia = Math.max(1e-6, Math.abs(b - a) * 1e-6);
+        if (Math.abs(x[0] - a) > tolerancia || Math.abs(x[n] - b) > tolerancia) {
+            throw new IllegalArgumentException("Los valores de Xi deben iniciar en a y terminar en b.");
+        }
+        double hEsperado = (b - a) / n;
+        for (int i = 1; i <= n; i++) {
+            double paso = x[i] - x[i - 1];
+            if (paso <= 0) {
+                throw new IllegalArgumentException("Los valores de Xi deben ser crecientes.");
+            }
+            if (Math.abs(paso - hEsperado) > tolerancia) {
+                throw new IllegalArgumentException("Los valores de Xi deben estar equidistantes.");
+            }
+        }
+    }
+
     private void centrarColumnas() {
-        tblDatos.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+        JTableHeader header = tblDatos.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        header.setBackground(new Color(231, 236, 245));
+        header.setForeground(COLOR_TEXT);
+        header.setReorderingAllowed(false);
+
+        tblDatos.setDefaultRenderer(Object.class, new TablaRenderer());
+        tblDatos.setDefaultRenderer(Number.class, new TablaRenderer());
+        tblDatos.getColumnModel().getColumn(0).setPreferredWidth(40);
+        tblDatos.getColumnModel().getColumn(1).setPreferredWidth(120);
+        tblDatos.getColumnModel().getColumn(2).setPreferredWidth(120);
+    }
+
+    private class TablaRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected,
+                boolean hasFocus, int row, int column) {
+            Object valor = value;
+            if (value instanceof Number) {
+                valor = fmt.format(((Number) value).doubleValue());
+            }
+            Component comp = super.getTableCellRendererComponent(table, valor, isSelected, hasFocus, row, column);
+            if (!isSelected) {
+                comp.setBackground(row % 2 == 0 ? Color.WHITE : new Color(248, 250, 253));
+                comp.setForeground(COLOR_TEXT);
+            } else {
+                comp.setForeground(table.getSelectionForeground());
+            }
+            if (column == 0) {
+                setHorizontalAlignment(SwingConstants.CENTER);
+            } else {
+                setHorizontalAlignment(SwingConstants.RIGHT);
+            }
+            return comp;
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

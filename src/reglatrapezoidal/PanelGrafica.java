@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Path2D;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import javax.swing.JPanel;
 
@@ -14,9 +15,10 @@ public class PanelGrafica extends JPanel {
 
     private double[] x = new double[0];
     private double[] y = new double[0];
+    private final DecimalFormat fmt = new DecimalFormat("0.##");
 
     public PanelGrafica() {
-        setBackground(new Color(236, 240, 245));
+        setBackground(new Color(239, 243, 248));
     }
 
     public void setDatos(double[] x, double[] y) {
@@ -43,7 +45,20 @@ public class PanelGrafica extends JPanel {
         int top = 20;
         int bottom = 35;
 
-        g2.setColor(new Color(120, 130, 145));
+        g2.setColor(new Color(205, 212, 224));
+        g2.setStroke(new BasicStroke(1f));
+        int gridX = 5;
+        int gridY = 5;
+        for (int i = 0; i <= gridX; i++) {
+            int gx = left + (int) Math.round(i * (w - left - right) / (double) gridX);
+            g2.drawLine(gx, top, gx, h - bottom);
+        }
+        for (int i = 0; i <= gridY; i++) {
+            int gy = top + (int) Math.round(i * (h - top - bottom) / (double) gridY);
+            g2.drawLine(left, gy, w - right, gy);
+        }
+
+        g2.setColor(new Color(110, 120, 140));
         g2.setStroke(new BasicStroke(1.6f));
         g2.drawLine(left, h - bottom, w - right, h - bottom);
         g2.drawLine(left, h - bottom, left, top);
@@ -55,7 +70,7 @@ public class PanelGrafica extends JPanel {
         if (x.length < 2 || y.length < 2) {
             g2.setColor(new Color(110, 120, 140));
             g2.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-            g2.drawString("Genere tabla y calcule para visualizar trapecios", left + 10, top + 20);
+            g2.drawString("Genere la tabla y calcule para visualizar trapecios.", left + 10, top + 20);
             g2.dispose();
             return;
         }
@@ -84,6 +99,19 @@ public class PanelGrafica extends JPanel {
 
         int baseY = h - bottom - (int) Math.round((0 - minY) * (h - top - bottom) / rangeY);
         baseY = Math.max(top, Math.min(h - bottom, baseY));
+
+        g2.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+        g2.setColor(new Color(120, 130, 145));
+        for (int i = 0; i <= gridX; i++) {
+            double value = minX + i * rangeX / gridX;
+            int gx = left + (int) Math.round(i * (w - left - right) / (double) gridX);
+            g2.drawString(fmt.format(value), gx - 6, h - bottom + 14);
+        }
+        for (int i = 0; i <= gridY; i++) {
+            double value = maxY - i * rangeY / gridY;
+            int gy = top + (int) Math.round(i * (h - top - bottom) / (double) gridY);
+            g2.drawString(fmt.format(value), left - 40, gy + 4);
+        }
 
         for (int i = 0; i < x.length - 1; i++) {
             int x1 = left + (int) Math.round((x[i] - minX) * (w - left - right) / rangeX);
