@@ -31,6 +31,9 @@ import javax.swing.text.DocumentFilter;
 public class FrmTrapezoidal extends javax.swing.JFrame {
 
     private static final int MAX_SEGMENTOS = 6;
+    private static final int COL_INDICE = 0;
+    private static final int COL_X = 1;
+    private static final int COL_FX = 2;
     private static final Color COLOR_BG = new Color(22, 25, 32);
     private static final Color COLOR_SURFACE = new Color(30, 34, 43);
     private static final Color COLOR_SURFACE_ALT = new Color(38, 43, 54);
@@ -376,8 +379,8 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             double[] x = new double[n + 1];
             double[] fx = new double[n + 1];
             for (int i = 0; i <= n; i++) {
-                Object xObj = tblDatos.getValueAt(i, 1);
-                Object fObj = tblDatos.getValueAt(i, 2);
+                Object xObj = tblDatos.getValueAt(i, COL_X);
+                Object fObj = tblDatos.getValueAt(i, COL_FX);
                 if (xObj == null || fObj == null || xObj.toString().trim().isEmpty() || fObj.toString().trim().isEmpty()) {
                     throw new IllegalArgumentException("La tabla está incompleta. Verifique Xi y f(Xi). (fila " + (i + 1) + ")");
                 }
@@ -562,14 +565,14 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         return new DefaultTableModel(new Object[][]{}, new String[]{"i", "Xi", "f(Xi)"}) {
             @Override
             public boolean isCellEditable(int row, int col) {
-                return col == 2;
+                return col == COL_FX;
             }
 
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 return switch (columnIndex) {
-                    case 0 -> Integer.class;
-                    case 1, 2 -> Double.class;
+                    case COL_INDICE -> Integer.class;
+                    case COL_X, COL_FX -> Double.class;
                     default -> Object.class;
                 };
             }
@@ -602,10 +605,10 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
 
         tblDatos.setDefaultRenderer(Object.class, new TablaRenderer());
         tblDatos.setDefaultRenderer(Number.class, new TablaRenderer());
-        tblDatos.getColumnModel().getColumn(0).setPreferredWidth(40);
-        tblDatos.getColumnModel().getColumn(1).setPreferredWidth(120);
-        tblDatos.getColumnModel().getColumn(2).setPreferredWidth(120);
-        tblDatos.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(crearCampoDecimal()));
+        tblDatos.getColumnModel().getColumn(COL_INDICE).setPreferredWidth(40);
+        tblDatos.getColumnModel().getColumn(COL_X).setPreferredWidth(120);
+        tblDatos.getColumnModel().getColumn(COL_FX).setPreferredWidth(120);
+        tblDatos.getColumnModel().getColumn(COL_FX).setCellEditor(new DefaultCellEditor(crearCampoDecimal()));
     }
 
     private void configurarCampo(javax.swing.JTextField field, int alignment) {
@@ -672,8 +675,8 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             return;
         }
         tblDatos.requestFocusInWindow();
-        tblDatos.changeSelection(0, 2, false, false);
-        tblDatos.editCellAt(0, 2);
+        tblDatos.changeSelection(0, COL_FX, false, false);
+        tblDatos.editCellAt(0, COL_FX);
     }
 
     private void configurarBoton(javax.swing.JButton button, Color base, Color hover, Color border) {
@@ -722,7 +725,8 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             availableSet.add(font.toLowerCase(Locale.ROOT));
         }
         for (String candidate : candidates) {
-            if (availableSet.contains(candidate.toLowerCase(Locale.ROOT))) {
+            String candidateLower = candidate.toLowerCase(Locale.ROOT);
+            if (availableSet.contains(candidateLower)) {
                 return new Font(candidate, style, size);
             }
         }
@@ -775,13 +779,13 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
                 comp.setForeground(table.getSelectionForeground());
             }
             if (comp instanceof JLabel label) {
-                if (column == 0) {
+                if (column == COL_INDICE) {
                     label.setHorizontalAlignment(SwingConstants.CENTER);
                 } else {
                     label.setHorizontalAlignment(SwingConstants.RIGHT);
                 }
             } else {
-                setHorizontalAlignment(column == 0 ? SwingConstants.CENTER : SwingConstants.RIGHT);
+                setHorizontalAlignment(column == COL_INDICE ? SwingConstants.CENTER : SwingConstants.RIGHT);
             }
             return comp;
         }
