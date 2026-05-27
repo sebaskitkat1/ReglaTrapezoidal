@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
@@ -34,8 +35,8 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
     private static final Color COLOR_DANGER_BORDER = new Color(200, 60, 48);
     private static final Color COLOR_SURFACE_ZEBRA = new Color(34, 39, 49);
     private static final Font FONT_TITLE = new Font("Segoe UI", Font.BOLD, 26);
-    private static final Font FONT_MONO_PLAIN = new Font("Consolas", Font.PLAIN, 14);
-    private static final Font FONT_MONO_BOLD = new Font("Consolas", Font.BOLD, 18);
+    private static final Font FONT_MONO_PLAIN = crearFuenteMonospace(Font.PLAIN, 14);
+    private static final Font FONT_MONO_BOLD = crearFuenteMonospace(Font.BOLD, 18);
     private static final double MIN_TOLERANCE = 1e-5;
     private static final double TOLERANCE_SCALE = 1e-6;
     private final DecimalFormat fmt = new DecimalFormat("0.######");
@@ -624,6 +625,18 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             }
         });
     }
+    private static Font crearFuenteMonospace(int style, int size) {
+        String[] candidates = {"Consolas", "Monospaced"};
+        String[] available = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        for (String candidate : candidates) {
+            for (String font : available) {
+                if (font.equalsIgnoreCase(candidate)) {
+                    return new Font(candidate, style, size);
+                }
+            }
+        }
+        return new Font(Font.MONOSPACED, style, size);
+    }
 
     private class TablaRenderer extends DefaultTableCellRenderer {
         @Override
@@ -653,7 +666,6 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             }
             return comp;
         }
-
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
