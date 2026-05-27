@@ -25,11 +25,17 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
     private static final Color COLOR_TEXT = new Color(230, 234, 240);
     private static final Color COLOR_TEXT_MUTED = new Color(160, 168, 182);
     private static final Color COLOR_ACCENT = new Color(72, 123, 255);
+    private static final Color COLOR_ACCENT_BORDER = new Color(58, 104, 220);
     private static final Color COLOR_SUCCESS = new Color(46, 204, 113);
     private static final Color COLOR_SUCCESS_HOVER = new Color(72, 222, 130);
+    private static final Color COLOR_SUCCESS_BORDER = new Color(36, 175, 95);
     private static final Color COLOR_DANGER = new Color(231, 76, 60);
     private static final Color COLOR_DANGER_HOVER = new Color(239, 96, 80);
+    private static final Color COLOR_DANGER_BORDER = new Color(200, 60, 48);
     private static final Color COLOR_SURFACE_ZEBRA = new Color(34, 39, 49);
+    private static final Font FONT_TITLE = new Font("Segoe UI", Font.BOLD, 26);
+    private static final Font FONT_MONO_PLAIN = new Font("Consolas", Font.PLAIN, 14);
+    private static final Font FONT_MONO_BOLD = new Font("Consolas", Font.BOLD, 18);
     private static final double MIN_TOLERANCE = 1e-5;
     private static final double TOLERANCE_SCALE = 1e-6;
     private final DecimalFormat fmt = new DecimalFormat("0.######");
@@ -455,7 +461,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
                 BorderFactory.createLineBorder(COLOR_BORDER),
                 BorderFactory.createEmptyBorder(18, 18, 18, 18)));
 
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitulo.setFont(FONT_TITLE);
         lblTitulo.setForeground(COLOR_TEXT);
         lblEntrada.setForeground(COLOR_TEXT_MUTED);
         lblAcciones.setForeground(COLOR_TEXT_MUTED);
@@ -473,10 +479,10 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         configurarCampo(txtSegmentos, SwingConstants.CENTER);
         configurarCampo(txtResultado, SwingConstants.RIGHT);
         txtResultado.setBackground(COLOR_SURFACE_ALT);
-        txtResultado.setFont(new Font("Consolas", Font.BOLD, 18));
+        txtResultado.setFont(FONT_MONO_BOLD);
         txtResultado.setEditable(false);
 
-        txtProcedimiento.setFont(new Font("Consolas", Font.PLAIN, 14));
+        txtProcedimiento.setFont(FONT_MONO_PLAIN);
         txtProcedimiento.setText("Ingrese límites, segmentos y presione Generar Tabla.");
         txtProcedimiento.setEditable(false);
         txtProcedimiento.setForeground(COLOR_TEXT);
@@ -486,9 +492,9 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
                 BorderFactory.createLineBorder(COLOR_BORDER),
                 BorderFactory.createEmptyBorder(10, 12, 10, 12)));
 
-        configurarBoton(btnGenerar, COLOR_ACCENT, COLOR_ACCENT.brighter());
-        configurarBoton(btnCalcular, COLOR_SUCCESS, COLOR_SUCCESS_HOVER);
-        configurarBoton(btnLimpiar, COLOR_DANGER, COLOR_DANGER_HOVER);
+        configurarBoton(btnGenerar, COLOR_ACCENT, COLOR_ACCENT.brighter(), COLOR_ACCENT_BORDER);
+        configurarBoton(btnCalcular, COLOR_SUCCESS, COLOR_SUCCESS_HOVER, COLOR_SUCCESS_BORDER);
+        configurarBoton(btnLimpiar, COLOR_DANGER, COLOR_DANGER_HOVER, COLOR_DANGER_BORDER);
 
         sepHeader.setForeground(COLOR_BORDER);
         sepHeader.setBackground(COLOR_BORDER);
@@ -580,12 +586,12 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
                 BorderFactory.createEmptyBorder(8, 12, 8, 12)));
     }
 
-    private void configurarBoton(javax.swing.JButton button, Color base, Color hover) {
+    private void configurarBoton(javax.swing.JButton button, Color base, Color hover, Color border) {
         button.setBackground(base);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(base.darker()),
+                BorderFactory.createLineBorder(border),
                 BorderFactory.createEmptyBorder(10, 18, 10, 18)));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.addMouseListener(new MouseAdapter() {
@@ -598,7 +604,9 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
 
             @Override
             public void mouseExited(MouseEvent e) {
-                button.setBackground(base);
+                if (button.isEnabled()) {
+                    button.setBackground(base);
+                }
             }
 
             @Override
