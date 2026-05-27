@@ -11,13 +11,22 @@ import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.DocumentFilter;
 
 public class FrmTrapezoidal extends javax.swing.JFrame {
 
@@ -42,13 +51,17 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
     private static final Font FONT_MONO_BOLD = crearFuenteMonospace(Font.BOLD, 18);
     private static final double MIN_TOLERANCE = 1e-5;
     private static final double TOLERANCE_SCALE = 1e-6;
+    private static final Pattern DECIMAL_PATTERN = Pattern.compile("-?\\d*(?:[\\.,]\\d*)?");
+    private static final Pattern INTEGER_PATTERN = Pattern.compile("\\d*");
     private final DecimalFormat fmt = new DecimalFormat("0.######");
+    private boolean tablaGenerada = false;
 
     public FrmTrapezoidal() {
         initComponents();
         getContentPane().setBackground(COLOR_BG);
         tblDatos.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         aplicarEstilos();
+        configurarValidacionesEntrada();
         setMinimumSize(new java.awt.Dimension(1080, 760));
     }
 
@@ -341,9 +354,12 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             centrarColumnas();
             txtResultado.setText("");
             txtProcedimiento.setText("Tabla generada con n = " + n + " segmentos.\n"
-                    + "Complete o corrija valores de Xi y f(Xi), luego presione Calcular.");
+                    + "Complete los valores de f(Xi), luego presione Calcular.");
             panelGrafica.setDatos(new double[0], new double[0]);
             btnCalcular.setEnabled(true);
+            tablaGenerada = true;
+            getRootPane().setDefaultButton(btnCalcular);
+            enfocarPrimerFx();
         } catch (IllegalArgumentException ex) {
             mostrarError(ex.getMessage());
         }
@@ -363,10 +379,10 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
                 Object xObj = tblDatos.getValueAt(i, 1);
                 Object fObj = tblDatos.getValueAt(i, 2);
                 if (xObj == null || fObj == null || xObj.toString().trim().isEmpty() || fObj.toString().trim().isEmpty()) {
-                    throw new IllegalArgumentException("La tabla está incompleta. Verifique Xi y f(Xi). (fila " + i + ")");
+                    throw new IllegalArgumentException("La tabla está incompleta. Verifique Xi y f(Xi). (fila " + (i + 1) + ")");
                 }
-                x[i] = leerNumero(xObj, "Xi en fila " + i);
-                fx[i] = leerNumero(fObj, "f(Xi) en fila " + i);
+                x[i] = leerNumero(xObj, "Xi en fila " + (i + 1));
+                fx[i] = leerNumero(fObj, "f(Xi) en fila " + (i + 1));
             }
 
             double a = leerNumero(txtInferior.getText(), "límite inferior");
@@ -423,6 +439,8 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         centrarColumnas();
         panelGrafica.setDatos(new double[0], new double[0]);
         btnCalcular.setEnabled(false);
+        tablaGenerada = false;
+        getRootPane().setDefaultButton(btnGenerar);
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void mostrarError(String mensaje) {
@@ -519,7 +537,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         txtInferior.setToolTipText("Ingrese el límite inferior a.");
         txtSuperior.setToolTipText("Ingrese el límite superior b.");
         txtSegmentos.setToolTipText("Número de segmentos (1 a " + MAX_SEGMENTOS + ").");
-        tblDatos.setToolTipText("Ingrese los valores de Xi y f(Xi) para cada segmento.");
+        tblDatos.setToolTipText("Ingrese los valores de f(Xi) para cada segmento.");
         panelGrafica.setToolTipText("Visualización de la regla trapezoidal.");
 
         scrollTabla.setBorder(BorderFactory.createLineBorder(COLOR_BORDER));
@@ -544,15 +562,16 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         return new DefaultTableModel(new Object[][]{}, new String[]{"i", "Xi", "f(Xi)"}) {
             @Override
             public boolean isCellEditable(int row, int col) {
-                return col != 0;
+                return col == 2;
             }
 
             @Override
             public Class<?> getColumnClass(int columnIndex) {
-                if (columnIndex == 0) {
-                    return Integer.class;
-                }
-                return Object.class;
+                return switch (columnIndex) {
+                    case 0 -> Integer.class;
+                    case 1, 2 -> Double.class;
+                    default -> Object.class;
+                };
             }
         };
     }
@@ -586,6 +605,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         tblDatos.getColumnModel().getColumn(0).setPreferredWidth(40);
         tblDatos.getColumnModel().getColumn(1).setPreferredWidth(120);
         tblDatos.getColumnModel().getColumn(2).setPreferredWidth(120);
+        tblDatos.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(crearCampoDecimal()));
     }
 
     private void configurarCampo(javax.swing.JTextField field, int alignment) {
@@ -596,6 +616,64 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         field.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(COLOR_BORDER),
                 BorderFactory.createEmptyBorder(8, 12, 8, 12)));
+    }
+
+    private void configurarValidacionesEntrada() {
+        aplicarFiltro(txtInferior.getDocument(), DECIMAL_PATTERN);
+        aplicarFiltro(txtSuperior.getDocument(), DECIMAL_PATTERN);
+        aplicarFiltro(txtSegmentos.getDocument(), INTEGER_PATTERN);
+
+        DocumentListener listener = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                marcarEntradaModificada();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                marcarEntradaModificada();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                marcarEntradaModificada();
+            }
+        };
+        txtInferior.getDocument().addDocumentListener(listener);
+        txtSuperior.getDocument().addDocumentListener(listener);
+        txtSegmentos.getDocument().addDocumentListener(listener);
+    }
+
+    private void marcarEntradaModificada() {
+        if (!tablaGenerada) {
+            return;
+        }
+        tablaGenerada = false;
+        btnCalcular.setEnabled(false);
+        getRootPane().setDefaultButton(btnGenerar);
+        txtProcedimiento.setText("Se modificaron los datos de entrada. Genere la tabla nuevamente.");
+    }
+
+    private void aplicarFiltro(Document document, Pattern pattern) {
+        if (document instanceof AbstractDocument abstractDocument) {
+            abstractDocument.setDocumentFilter(new RegexDocumentFilter(pattern));
+        }
+    }
+
+    private javax.swing.JTextField crearCampoDecimal() {
+        javax.swing.JTextField field = new javax.swing.JTextField();
+        field.setHorizontalAlignment(SwingConstants.RIGHT);
+        aplicarFiltro(field.getDocument(), DECIMAL_PATTERN);
+        return field;
+    }
+
+    private void enfocarPrimerFx() {
+        if (tblDatos.getRowCount() == 0) {
+            return;
+        }
+        tblDatos.requestFocusInWindow();
+        tblDatos.changeSelection(0, 2, false, false);
+        tblDatos.editCellAt(0, 2);
     }
 
     private void configurarBoton(javax.swing.JButton button, Color base, Color hover, Color border) {
@@ -649,6 +727,34 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             }
         }
         return new Font(Font.MONOSPACED, style, size);
+    }
+
+    private static class RegexDocumentFilter extends DocumentFilter {
+        private final Pattern pattern;
+
+        private RegexDocumentFilter(Pattern pattern) {
+            this.pattern = pattern;
+        }
+
+        @Override
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+            replace(fb, offset, 0, string, attr);
+        }
+
+        @Override
+        public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+            replace(fb, offset, length, "", null);
+        }
+
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+            String current = fb.getDocument().getText(0, fb.getDocument().getLength());
+            StringBuilder updated = new StringBuilder(current);
+            updated.replace(offset, offset + length, text == null ? "" : text);
+            if (pattern.matcher(updated).matches()) {
+                super.replace(fb, offset, length, text, attrs);
+            }
+        }
     }
 
     private class TablaRenderer extends DefaultTableCellRenderer {
