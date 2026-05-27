@@ -26,7 +26,10 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
     private static final Color COLOR_TEXT_MUTED = new Color(160, 168, 182);
     private static final Color COLOR_ACCENT = new Color(72, 123, 255);
     private static final Color COLOR_SUCCESS = new Color(46, 204, 113);
+    private static final Color COLOR_SUCCESS_HOVER = new Color(72, 222, 130);
     private static final Color COLOR_DANGER = new Color(231, 76, 60);
+    private static final Color COLOR_DANGER_HOVER = new Color(239, 96, 80);
+    private static final Color COLOR_SURFACE_ZEBRA = new Color(34, 39, 49);
     private static final double MIN_TOLERANCE = 1e-5;
     private static final double TOLERANCE_SCALE = 1e-6;
     private final DecimalFormat fmt = new DecimalFormat("0.######");
@@ -484,8 +487,8 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
                 BorderFactory.createEmptyBorder(10, 12, 10, 12)));
 
         configurarBoton(btnGenerar, COLOR_ACCENT, COLOR_ACCENT.brighter());
-        configurarBoton(btnCalcular, COLOR_SUCCESS, new Color(72, 222, 130));
-        configurarBoton(btnLimpiar, COLOR_DANGER, new Color(239, 96, 80));
+        configurarBoton(btnCalcular, COLOR_SUCCESS, COLOR_SUCCESS_HOVER);
+        configurarBoton(btnLimpiar, COLOR_DANGER, COLOR_DANGER_HOVER);
 
         sepHeader.setForeground(COLOR_BORDER);
         sepHeader.setBackground(COLOR_BORDER);
@@ -626,7 +629,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             }
             Component comp = super.getTableCellRendererComponent(table, valor, isSelected, hasFocus, row, column);
             if (!isSelected) {
-                comp.setBackground(row % 2 == 0 ? COLOR_SURFACE : new Color(34, 39, 49));
+                comp.setBackground(row % 2 == 0 ? COLOR_SURFACE : COLOR_SURFACE_ZEBRA);
                 comp.setForeground(COLOR_TEXT);
             } else {
                 comp.setForeground(table.getSelectionForeground());
