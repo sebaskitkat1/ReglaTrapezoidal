@@ -387,13 +387,21 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             double integral = (h / 2.0) * (fx[0] + 2.0 * sumaInterna + fx[n]);
             txtResultado.setText(fmt.format(integral));
 
+            boolean tieneInternas = n > 1;
             StringBuilder proc = new StringBuilder();
             proc.append("h = (b-a)/n\n");
             proc.append("h = (").append(fmt.format(b)).append(" - ").append(fmt.format(a)).append(")/").append(n).append("\n");
             proc.append("h = ").append(fmt.format(h)).append("\n\n");
-            proc.append("I = h/2 [f(x0) + 2(").append(internasTexto).append(") + f(x").append(n).append(")]\n");
-            proc.append("I = ").append(fmt.format(h)).append("/2 [").append(fmt.format(fx[0]))
-                    .append(" + 2(").append(fmt.format(sumaInterna)).append(") + ").append(fmt.format(fx[n])).append("]\n");
+            proc.append("I = h/2 [f(x0)");
+            if (tieneInternas) {
+                proc.append(" + 2(").append(internasTexto).append(")");
+            }
+            proc.append(" + f(x").append(n).append(")]\n");
+            proc.append("I = ").append(fmt.format(h)).append("/2 [").append(fmt.format(fx[0]));
+            if (tieneInternas) {
+                proc.append(" + 2(").append(fmt.format(sumaInterna)).append(")");
+            }
+            proc.append(" + ").append(fmt.format(fx[n])).append("]\n");
             proc.append("Resultado = ").append(fmt.format(integral));
             txtProcedimiento.setText(proc.toString());
 
