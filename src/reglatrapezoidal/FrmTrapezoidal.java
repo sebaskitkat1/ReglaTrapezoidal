@@ -2,7 +2,10 @@ package reglatrapezoidal;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -15,14 +18,15 @@ import javax.swing.table.JTableHeader;
 public class FrmTrapezoidal extends javax.swing.JFrame {
 
     private static final int MAX_SEGMENTOS = 6;
-    private static final Color COLOR_PRIMARY = new Color(32, 88, 163);
-    private static final Color COLOR_PRIMARY_DARK = new Color(24, 70, 135);
-    private static final Color COLOR_ACCENT = new Color(52, 120, 210);
-    private static final Color COLOR_TEXT = new Color(55, 66, 86);
-    private static final Color COLOR_SUBTLE = new Color(118, 128, 145);
-    private static final Color COLOR_BORDER = new Color(189, 199, 214);
-    private static final Color COLOR_BG = new Color(242, 246, 251);
-    private static final Color COLOR_INPUT_BG = new Color(255, 255, 255);
+    private static final Color COLOR_BG = new Color(22, 25, 32);
+    private static final Color COLOR_SURFACE = new Color(30, 34, 43);
+    private static final Color COLOR_SURFACE_ALT = new Color(38, 43, 54);
+    private static final Color COLOR_BORDER = new Color(58, 64, 78);
+    private static final Color COLOR_TEXT = new Color(230, 234, 240);
+    private static final Color COLOR_TEXT_MUTED = new Color(160, 168, 182);
+    private static final Color COLOR_ACCENT = new Color(72, 123, 255);
+    private static final Color COLOR_SUCCESS = new Color(46, 204, 113);
+    private static final Color COLOR_DANGER = new Color(231, 76, 60);
     private static final double MIN_TOLERANCE = 1e-5;
     private static final double TOLERANCE_SCALE = 1e-6;
     private final DecimalFormat fmt = new DecimalFormat("0.######");
@@ -32,6 +36,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         getContentPane().setBackground(COLOR_BG);
         tblDatos.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         aplicarEstilos();
+        setMinimumSize(new java.awt.Dimension(1080, 760));
     }
 
     @SuppressWarnings("unchecked")
@@ -40,55 +45,69 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
 
         pnlRoot = new javax.swing.JPanel();
         lblTitulo = new javax.swing.JLabel();
+        lblEntrada = new javax.swing.JLabel();
         lblInferior = new javax.swing.JLabel();
         txtInferior = new javax.swing.JTextField();
         lblSuperior = new javax.swing.JLabel();
         txtSuperior = new javax.swing.JTextField();
         lblSegmentos = new javax.swing.JLabel();
         txtSegmentos = new javax.swing.JTextField();
+        lblAcciones = new javax.swing.JLabel();
         btnGenerar = new javax.swing.JButton();
         btnCalcular = new javax.swing.JButton();
         btnLimpiar = new javax.swing.JButton();
+        sepContenido = new javax.swing.JSeparator();
         scrollTabla = new javax.swing.JScrollPane();
         tblDatos = new javax.swing.JTable();
         scrollProcedimiento = new javax.swing.JScrollPane();
         txtProcedimiento = new javax.swing.JTextArea();
+        lblTabla = new javax.swing.JLabel();
         lblProcedimiento = new javax.swing.JLabel();
         lblResultado = new javax.swing.JLabel();
         txtResultado = new javax.swing.JTextField();
+        lblGrafica = new javax.swing.JLabel();
         panelGrafica = new reglatrapezoidal.PanelGrafica();
+        sepHeader = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Método Trapezoidal Compuesto");
-        setResizable(false);
+        setResizable(true);
 
-        pnlRoot.setBackground(new java.awt.Color(245, 248, 252));
-        pnlRoot.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(186, 198, 214)));
+        pnlRoot.setBackground(new java.awt.Color(22, 25, 32));
+        pnlRoot.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(58, 64, 78)));
 
         lblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        lblTitulo.setForeground(new java.awt.Color(22, 74, 146));
+        lblTitulo.setForeground(new java.awt.Color(230, 234, 240));
         lblTitulo.setText("Regla Trapezoidal Compuesta");
 
+        lblEntrada.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblEntrada.setForeground(new java.awt.Color(160, 168, 182));
+        lblEntrada.setText("Entrada de datos");
+
         lblInferior.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lblInferior.setForeground(new java.awt.Color(70, 83, 105));
+        lblInferior.setForeground(new java.awt.Color(230, 234, 240));
         lblInferior.setText("Límite inferior (a)");
 
         txtInferior.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         lblSuperior.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lblSuperior.setForeground(new java.awt.Color(70, 83, 105));
+        lblSuperior.setForeground(new java.awt.Color(230, 234, 240));
         lblSuperior.setText("Límite superior (b)");
 
         txtSuperior.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         lblSegmentos.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lblSegmentos.setForeground(new java.awt.Color(70, 83, 105));
+        lblSegmentos.setForeground(new java.awt.Color(230, 234, 240));
         lblSegmentos.setText("Segmentos (n <= 6)");
 
         txtSegmentos.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
-        btnGenerar.setBackground(new java.awt.Color(45, 110, 198));
-        btnGenerar.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        lblAcciones.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblAcciones.setForeground(new java.awt.Color(160, 168, 182));
+        lblAcciones.setText("Acciones");
+
+        btnGenerar.setBackground(new java.awt.Color(72, 123, 255));
+        btnGenerar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnGenerar.setForeground(new java.awt.Color(255, 255, 255));
         btnGenerar.setText("Generar Tabla");
         btnGenerar.setBorderPainted(false);
@@ -98,8 +117,8 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             }
         });
 
-        btnCalcular.setBackground(new java.awt.Color(36, 92, 171));
-        btnCalcular.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        btnCalcular.setBackground(new java.awt.Color(46, 204, 113));
+        btnCalcular.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCalcular.setForeground(new java.awt.Color(255, 255, 255));
         btnCalcular.setText("Calcular");
         btnCalcular.setBorderPainted(false);
@@ -109,8 +128,8 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             }
         });
 
-        btnLimpiar.setBackground(new java.awt.Color(107, 118, 136));
-        btnLimpiar.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        btnLimpiar.setBackground(new java.awt.Color(231, 76, 60));
+        btnLimpiar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnLimpiar.setForeground(new java.awt.Color(255, 255, 255));
         btnLimpiar.setText("Limpiar");
         btnLimpiar.setBorderPainted(false);
@@ -154,94 +173,122 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         txtProcedimiento.setWrapStyleWord(true);
         scrollProcedimiento.setViewportView(txtProcedimiento);
 
+        lblTabla.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblTabla.setForeground(new java.awt.Color(160, 168, 182));
+        lblTabla.setText("Tabla de valores");
+
         lblProcedimiento.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lblProcedimiento.setForeground(new java.awt.Color(70, 83, 105));
+        lblProcedimiento.setForeground(new java.awt.Color(160, 168, 182));
         lblProcedimiento.setText("Procedimiento");
 
         lblResultado.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lblResultado.setForeground(new java.awt.Color(70, 83, 105));
-        lblResultado.setText("Resultado");
+        lblResultado.setForeground(new java.awt.Color(160, 168, 182));
+        lblResultado.setText("Resultado final");
 
         txtResultado.setEditable(false);
-        txtResultado.setBackground(new java.awt.Color(235, 240, 247));
-        txtResultado.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        txtResultado.setForeground(new java.awt.Color(22, 74, 146));
+        txtResultado.setBackground(new java.awt.Color(38, 43, 54));
+        txtResultado.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+        txtResultado.setForeground(new java.awt.Color(230, 234, 240));
 
-        panelGrafica.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(179, 191, 208)));
+        lblGrafica.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblGrafica.setForeground(new java.awt.Color(160, 168, 182));
+        lblGrafica.setText("Gráfica");
+
+        panelGrafica.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(58, 64, 78)));
 
         javax.swing.GroupLayout pnlRootLayout = new javax.swing.GroupLayout(pnlRoot);
         pnlRoot.setLayout(pnlRootLayout);
         pnlRootLayout.setHorizontalGroup(
             pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRootLayout.createSequentialGroup()
-                .addGap(24, 24, 24)
+                .addGap(28, 28, 28)
                 .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblTitulo)
+                    .addComponent(sepHeader)
+                    .addComponent(lblEntrada)
                     .addGroup(pnlRootLayout.createSequentialGroup()
                         .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(lblInferior)
-                            .addComponent(txtInferior, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
+                            .addComponent(txtInferior, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(16, 16, 16)
                         .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(lblSuperior)
-                            .addComponent(txtSuperior, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
+                            .addComponent(txtSuperior, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(16, 16, 16)
                         .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(lblSegmentos)
-                            .addComponent(txtSegmentos, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addComponent(btnGenerar, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12)
-                        .addComponent(btnCalcular, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12)
-                        .addComponent(btnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtSegmentos, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(lblAcciones)
+                    .addGroup(pnlRootLayout.createSequentialGroup()
+                        .addComponent(btnGenerar, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(14, 14, 14)
+                        .addComponent(btnCalcular, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(14, 14, 14)
+                        .addComponent(btnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(sepContenido)
                     .addGroup(pnlRootLayout.createSequentialGroup()
                         .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(scrollTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 438, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblProcedimiento)
-                            .addComponent(scrollProcedimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 438, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblTabla)
+                            .addComponent(scrollTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(pnlRootLayout.createSequentialGroup()
                                 .addComponent(lblResultado)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtResultado)))
-                        .addGap(18, 18, 18)
-                        .addComponent(panelGrafica, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(23, Short.MAX_VALUE))
+                                .addComponent(txtResultado))
+                            .addComponent(lblProcedimiento)
+                            .addComponent(scrollProcedimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(24, 24, 24)
+                        .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblGrafica)
+                            .addComponent(panelGrafica, javax.swing.GroupLayout.PREFERRED_SIZE, 420, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(28, 28, 28))
         );
         pnlRootLayout.setVerticalGroup(
             pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRootLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addGap(22, 22, 22)
                 .addComponent(lblTitulo)
-                .addGap(18, 18, 18)
-                .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(pnlRootLayout.createSequentialGroup()
-                        .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblInferior)
-                            .addComponent(lblSuperior)
-                            .addComponent(lblSegmentos))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtInferior, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtSuperior, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtSegmentos, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnGenerar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnCalcular, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(panelGrafica, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(10, 10, 10)
+                .addComponent(sepHeader, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16)
+                .addComponent(lblEntrada)
+                .addGap(8, 8, 8)
+                .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblInferior)
+                    .addComponent(lblSuperior)
+                    .addComponent(lblSegmentos))
+                .addGap(6, 6, 6)
+                .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtInferior, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSuperior, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSegmentos, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(14, 14, 14)
+                .addComponent(lblAcciones)
+                .addGap(8, 8, 8)
+                .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnGenerar, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCalcular, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(16, 16, 16)
+                .addComponent(sepContenido, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16)
                 .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlRootLayout.createSequentialGroup()
-                        .addComponent(scrollTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblTabla)
+                        .addGap(8, 8, 8)
+                        .addComponent(scrollTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
                         .addGroup(pnlRootLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblResultado)
-                            .addComponent(txtResultado, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(pnlRootLayout.createSequentialGroup()
+                            .addComponent(txtResultado, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(12, 12, 12)
                         .addComponent(lblProcedimiento)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(scrollProcedimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(19, Short.MAX_VALUE))
+                        .addGap(6, 6, 6)
+                        .addComponent(scrollProcedimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlRootLayout.createSequentialGroup()
+                        .addComponent(lblGrafica)
+                        .addGap(8, 8, 8)
+                        .addComponent(panelGrafica, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(22, 22, 22))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -403,35 +450,47 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         pnlRoot.setBackground(COLOR_BG);
         pnlRoot.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(COLOR_BORDER),
-                BorderFactory.createEmptyBorder(16, 16, 16, 16)));
+                BorderFactory.createEmptyBorder(18, 18, 18, 18)));
 
-        lblTitulo.setForeground(COLOR_PRIMARY);
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitulo.setForeground(COLOR_TEXT);
+        lblEntrada.setForeground(COLOR_TEXT_MUTED);
+        lblAcciones.setForeground(COLOR_TEXT_MUTED);
+        lblTabla.setForeground(COLOR_TEXT_MUTED);
+        lblGrafica.setForeground(COLOR_TEXT_MUTED);
+        lblProcedimiento.setForeground(COLOR_TEXT_MUTED);
+        lblResultado.setForeground(COLOR_TEXT_MUTED);
         lblInferior.setForeground(COLOR_TEXT);
         lblSuperior.setForeground(COLOR_TEXT);
         lblSegmentos.setForeground(COLOR_TEXT);
-        lblProcedimiento.setForeground(COLOR_TEXT);
-        lblResultado.setForeground(COLOR_TEXT);
         lblSegmentos.setText("Segmentos (1 - " + MAX_SEGMENTOS + ")");
 
-        txtInferior.setBackground(COLOR_INPUT_BG);
-        txtSuperior.setBackground(COLOR_INPUT_BG);
-        txtSegmentos.setBackground(COLOR_INPUT_BG);
-        txtResultado.setBackground(new Color(231, 238, 247));
-        txtResultado.setForeground(COLOR_PRIMARY_DARK);
-        txtResultado.setHorizontalAlignment(SwingConstants.RIGHT);
+        configurarCampo(txtInferior, SwingConstants.CENTER);
+        configurarCampo(txtSuperior, SwingConstants.CENTER);
+        configurarCampo(txtSegmentos, SwingConstants.CENTER);
+        configurarCampo(txtResultado, SwingConstants.RIGHT);
+        txtResultado.setBackground(COLOR_SURFACE_ALT);
+        txtResultado.setFont(new Font("Consolas", Font.BOLD, 18));
+        txtResultado.setEditable(false);
 
-        txtProcedimiento.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        txtProcedimiento.setFont(new Font("Consolas", Font.PLAIN, 14));
         txtProcedimiento.setText("Ingrese límites, segmentos y presione Generar Tabla.");
         txtProcedimiento.setEditable(false);
-        txtProcedimiento.setBackground(COLOR_INPUT_BG);
-        txtProcedimiento.setBorder(BorderFactory.createLineBorder(COLOR_BORDER));
+        txtProcedimiento.setForeground(COLOR_TEXT);
+        txtProcedimiento.setBackground(COLOR_SURFACE);
+        txtProcedimiento.setCaretColor(COLOR_TEXT);
+        txtProcedimiento.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(COLOR_BORDER),
+                BorderFactory.createEmptyBorder(10, 12, 10, 12)));
 
-        btnGenerar.setBackground(COLOR_ACCENT);
-        btnGenerar.setForeground(Color.WHITE);
-        btnCalcular.setBackground(COLOR_PRIMARY);
-        btnCalcular.setForeground(Color.WHITE);
-        btnLimpiar.setBackground(new Color(111, 122, 140));
-        btnLimpiar.setForeground(Color.WHITE);
+        configurarBoton(btnGenerar, COLOR_ACCENT, COLOR_ACCENT.brighter());
+        configurarBoton(btnCalcular, COLOR_SUCCESS, new Color(72, 222, 130));
+        configurarBoton(btnLimpiar, COLOR_DANGER, new Color(239, 96, 80));
+
+        sepHeader.setForeground(COLOR_BORDER);
+        sepHeader.setBackground(COLOR_BORDER);
+        sepContenido.setForeground(COLOR_BORDER);
+        sepContenido.setBackground(COLOR_BORDER);
 
         btnGenerar.setToolTipText("Genera la tabla de Xi según los límites y segmentos.");
         btnCalcular.setToolTipText("Calcula la integral con los valores de la tabla.");
@@ -439,16 +498,21 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         txtInferior.setToolTipText("Ingrese el límite inferior a.");
         txtSuperior.setToolTipText("Ingrese el límite superior b.");
         txtSegmentos.setToolTipText("Número de segmentos (1 a " + MAX_SEGMENTOS + ").");
+        tblDatos.setToolTipText("Ingrese los valores de Xi y f(Xi) para cada segmento.");
+        panelGrafica.setToolTipText("Visualización de la regla trapezoidal.");
 
         scrollTabla.setBorder(BorderFactory.createLineBorder(COLOR_BORDER));
         scrollProcedimiento.setBorder(BorderFactory.createLineBorder(COLOR_BORDER));
         panelGrafica.setBorder(BorderFactory.createLineBorder(COLOR_BORDER));
 
         tblDatos.setModel(crearModeloTabla());
-        tblDatos.setRowHeight(24);
-        tblDatos.setGridColor(new Color(214, 222, 232));
-        tblDatos.setSelectionBackground(new Color(210, 228, 255));
-        tblDatos.setSelectionForeground(COLOR_TEXT);
+        tblDatos.setRowHeight(26);
+        tblDatos.setForeground(COLOR_TEXT);
+        tblDatos.setBackground(COLOR_SURFACE);
+        tblDatos.setGridColor(COLOR_BORDER);
+        tblDatos.setSelectionBackground(new Color(74, 115, 198));
+        tblDatos.setSelectionForeground(Color.WHITE);
+        tblDatos.setShowVerticalLines(true);
 
         getRootPane().setDefaultButton(btnGenerar);
         btnCalcular.setEnabled(false);
@@ -492,7 +556,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
     private void centrarColumnas() {
         JTableHeader header = tblDatos.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        header.setBackground(new Color(231, 236, 245));
+        header.setBackground(COLOR_SURFACE_ALT);
         header.setForeground(COLOR_TEXT);
         header.setReorderingAllowed(false);
 
@@ -501,6 +565,53 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         tblDatos.getColumnModel().getColumn(0).setPreferredWidth(40);
         tblDatos.getColumnModel().getColumn(1).setPreferredWidth(120);
         tblDatos.getColumnModel().getColumn(2).setPreferredWidth(120);
+    }
+
+    private void configurarCampo(javax.swing.JTextField field, int alignment) {
+        field.setBackground(COLOR_SURFACE);
+        field.setForeground(COLOR_TEXT);
+        field.setCaretColor(COLOR_TEXT);
+        field.setHorizontalAlignment(alignment);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(COLOR_BORDER),
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
+    }
+
+    private void configurarBoton(javax.swing.JButton button, Color base, Color hover) {
+        button.setBackground(base);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(base.darker()),
+                BorderFactory.createEmptyBorder(10, 18, 10, 18)));
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                if (button.isEnabled()) {
+                    button.setBackground(hover);
+                }
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(base);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (button.isEnabled()) {
+                    button.setBackground(hover.darker());
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (button.isEnabled()) {
+                    button.setBackground(hover);
+                }
+            }
+        });
     }
 
     private class TablaRenderer extends DefaultTableCellRenderer {
@@ -515,7 +626,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             }
             Component comp = super.getTableCellRendererComponent(table, valor, isSelected, hasFocus, row, column);
             if (!isSelected) {
-                comp.setBackground(row % 2 == 0 ? Color.WHITE : new Color(248, 250, 253));
+                comp.setBackground(row % 2 == 0 ? COLOR_SURFACE : new Color(34, 39, 49));
                 comp.setForeground(COLOR_TEXT);
             } else {
                 comp.setForeground(table.getSelectionForeground());
@@ -531,22 +642,29 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             }
             return comp;
         }
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCalcular;
     private javax.swing.JButton btnGenerar;
     private javax.swing.JButton btnLimpiar;
+    private javax.swing.JLabel lblAcciones;
+    private javax.swing.JLabel lblEntrada;
+    private javax.swing.JLabel lblGrafica;
     private javax.swing.JLabel lblInferior;
     private javax.swing.JLabel lblProcedimiento;
     private javax.swing.JLabel lblResultado;
     private javax.swing.JLabel lblSegmentos;
     private javax.swing.JLabel lblSuperior;
+    private javax.swing.JLabel lblTabla;
     private javax.swing.JLabel lblTitulo;
     private reglatrapezoidal.PanelGrafica panelGrafica;
     private javax.swing.JPanel pnlRoot;
     private javax.swing.JScrollPane scrollProcedimiento;
     private javax.swing.JScrollPane scrollTabla;
+    private javax.swing.JSeparator sepContenido;
+    private javax.swing.JSeparator sepHeader;
     private javax.swing.JTable tblDatos;
     private javax.swing.JTextField txtInferior;
     private javax.swing.JTextArea txtProcedimiento;

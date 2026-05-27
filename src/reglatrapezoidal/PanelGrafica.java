@@ -22,7 +22,7 @@ public class PanelGrafica extends JPanel {
     private final DecimalFormat fmt = new DecimalFormat("0.##");
 
     public PanelGrafica() {
-        setBackground(new Color(239, 243, 248));
+        setBackground(new Color(30, 34, 43));
     }
 
     public void setDatos(double[] x, double[] y) {
@@ -49,7 +49,7 @@ public class PanelGrafica extends JPanel {
         int top = 20;
         int bottom = 35;
 
-        g2.setColor(new Color(205, 212, 224));
+        g2.setColor(new Color(58, 64, 78));
         g2.setStroke(new BasicStroke(1f));
         int gridX = 5;
         int gridY = 5;
@@ -62,7 +62,7 @@ public class PanelGrafica extends JPanel {
             g2.drawLine(left, gy, w - right, gy);
         }
 
-        g2.setColor(new Color(110, 120, 140));
+        g2.setColor(new Color(140, 148, 164));
         g2.setStroke(new BasicStroke(1.6f));
         g2.drawLine(left, h - bottom, w - right, h - bottom);
         g2.drawLine(left, h - bottom, left, top);
@@ -72,7 +72,7 @@ public class PanelGrafica extends JPanel {
         g2.drawString("f(x)", left - 30, top + 6);
 
         if (x.length < 2 || y.length < 2) {
-            g2.setColor(new Color(110, 120, 140));
+            g2.setColor(new Color(170, 178, 193));
             g2.setFont(new Font("Segoe UI", Font.PLAIN, 12));
             g2.drawString("Genere la tabla y calcule para visualizar trapecios.", left + 10, top + 20);
             g2.dispose();
@@ -105,7 +105,7 @@ public class PanelGrafica extends JPanel {
         baseY = Math.max(top, Math.min(h - bottom, baseY));
 
         g2.setFont(new Font("Segoe UI", Font.PLAIN, 10));
-        g2.setColor(new Color(120, 130, 145));
+        g2.setColor(new Color(150, 158, 172));
         for (int i = 0; i <= gridX; i++) {
             double value = minX + i * rangeX / gridX;
             int gx = left + (int) Math.round(i * (w - left - right) / (double) gridX);
@@ -130,13 +130,13 @@ public class PanelGrafica extends JPanel {
             trapezoid.lineTo(x2, baseY);
             trapezoid.closePath();
 
-            g2.setColor(new Color(81, 134, 222, 95));
+            g2.setColor(new Color(80, 142, 255, 90));
             g2.fill(trapezoid);
-            g2.setColor(new Color(40, 91, 180));
+            g2.setColor(new Color(92, 152, 255));
             g2.draw(trapezoid);
         }
 
-        g2.setColor(new Color(20, 73, 158));
+        g2.setColor(new Color(120, 176, 255));
         g2.setStroke(new BasicStroke(2.2f));
         for (int i = 0; i < x.length - 1; i++) {
             int x1 = left + (int) Math.round((x[i] - minX) * (w - left - right) / rangeX);
@@ -146,7 +146,7 @@ public class PanelGrafica extends JPanel {
             g2.drawLine(x1, y1, x2, y2);
         }
 
-        g2.setColor(new Color(17, 56, 122));
+        g2.setColor(new Color(188, 210, 255));
         for (int i = 0; i < x.length; i++) {
             int px = left + (int) Math.round((x[i] - minX) * (w - left - right) / rangeX);
             int py = h - bottom - (int) Math.round((y[i] - minY) * (h - top - bottom) / rangeY);
