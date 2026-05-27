@@ -52,6 +52,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
     private static final Font FONT_TITLE = new Font("Segoe UI", Font.BOLD, 26);
     private static final Font FONT_MONO_PLAIN = crearFuenteMonospace(Font.PLAIN, 14);
     private static final Font FONT_MONO_BOLD = crearFuenteMonospace(Font.BOLD, 18);
+    private static final Set<String> AVAILABLE_FONTS = cargarFuentesDisponibles();
     private static final double MIN_TOLERANCE = 1e-5;
     private static final double TOLERANCE_SCALE = 1e-6;
     private static final Pattern DECIMAL_PATTERN = Pattern.compile("-?\\d*(?:[\\.,]\\d*)?");
@@ -572,7 +573,6 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
             public Class<?> getColumnClass(int columnIndex) {
                 return switch (columnIndex) {
                     case COL_INDICE -> Integer.class;
-                    case COL_X, COL_FX -> Double.class;
                     default -> Object.class;
                 };
             }
@@ -719,18 +719,22 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
     }
     private static Font crearFuenteMonospace(int style, int size) {
         String[] candidates = {"Consolas", "Monospaced"};
+        for (String candidate : candidates) {
+            String candidateLower = candidate.toLowerCase(Locale.ROOT);
+            if (AVAILABLE_FONTS.contains(candidateLower)) {
+                return new Font(candidate, style, size);
+            }
+        }
+        return new Font(Font.MONOSPACED, style, size);
+    }
+
+    private static Set<String> cargarFuentesDisponibles() {
         String[] available = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
         Set<String> availableSet = new HashSet<>();
         for (String font : available) {
             availableSet.add(font.toLowerCase(Locale.ROOT));
         }
-        for (String candidate : candidates) {
-            String candidateLower = candidate.toLowerCase(Locale.ROOT);
-            if (availableSet.contains(candidateLower)) {
-                return new Font(candidate, style, size);
-            }
-        }
-        return new Font(Font.MONOSPACED, style, size);
+        return availableSet;
     }
 
     private static class RegexDocumentFilter extends DocumentFilter {
