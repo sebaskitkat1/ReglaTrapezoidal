@@ -8,6 +8,9 @@ import java.awt.GraphicsEnvironment;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -86,7 +89,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
         pnlRoot.setBackground(new java.awt.Color(22, 25, 32));
         pnlRoot.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(58, 64, 78)));
 
-        lblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        lblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 26)); // NOI18N
         lblTitulo.setForeground(new java.awt.Color(230, 234, 240));
         lblTitulo.setText("Regla Trapezoidal Compuesta");
 
@@ -197,7 +200,7 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
 
         txtResultado.setEditable(false);
         txtResultado.setBackground(new java.awt.Color(38, 43, 54));
-        txtResultado.setFont(new java.awt.Font("Consolas", 1, 18)); // NOI18N
+        txtResultado.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
         txtResultado.setForeground(new java.awt.Color(230, 234, 240));
 
         lblGrafica.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -628,11 +631,13 @@ public class FrmTrapezoidal extends javax.swing.JFrame {
     private static Font crearFuenteMonospace(int style, int size) {
         String[] candidates = {"Consolas", "Monospaced"};
         String[] available = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        Set<String> availableSet = new HashSet<>();
+        for (String font : available) {
+            availableSet.add(font.toLowerCase(Locale.ROOT));
+        }
         for (String candidate : candidates) {
-            for (String font : available) {
-                if (font.equalsIgnoreCase(candidate)) {
-                    return new Font(candidate, style, size);
-                }
+            if (availableSet.contains(candidate.toLowerCase(Locale.ROOT))) {
+                return new Font(candidate, style, size);
             }
         }
         return new Font(Font.MONOSPACED, style, size);
